@@ -5,25 +5,46 @@ import java.util.List;
 public class MyTree {
     MyNode root;
     MyNode target;
+    MyNode tempNode;
 
     public void insert(String data) {
         if (root == null) {
-            root = new MyNode();
+            root = getNewNode();
             target = root;
         }
         if (data.equals("(")) {
-            createChild();
+            if (target.getData() != null) {
+                if (target.getData().equals("/") || (target.getData().equals("*"))) {
+                    getChild();
+                }
+            }
+            getChild();
         } else if (isNum(data) && target.getData() == null) {
             setDataAndGoParent(data);
         } else if (isNum(data) && target.getData() != null) {
             createChildAndGoToParent(data);
-        } else if (data.equals("+") || data.equals("/")) {
+        } else if (data.equals("+") || data.equals("-")) {
             if (target.getR() == null || target.getL() == null) {
-                sedData(data);
-            } else if(target.getR() != null && target.getL() != null) {
-                setNewRoot();
-                sedData(data);
-                createChild();
+                setData(data);
+            } else if (target.getR() != null && target.getL() != null) {
+                if (target.getData().equals("/") || target.getData().equals("*")) {
+                    goToParent();
+                }
+                getNewRoot();
+                setData(data);
+                getChild();
+            }
+        } else if (data.equals("/") || data.equals("*")) {
+            if (target.getR() == null || target.getL() == null) {
+                setData(data);
+            } else if (target.getR() != null && target.getL() != null) {
+                if (target.getData().equals("+") || target.getData().equals("-")) {
+                    upGreat(data);
+                } else {
+                    getNewRoot();
+                    setData(data);
+                    getChild();
+                }
             }
         } else if (data.equals(")")) {
             goToParent();
@@ -31,53 +52,57 @@ public class MyTree {
 
     }
 
-    private void createChild() {
-        MyNode node = new MyNode();
+    private void getChild() {
+        tempNode = getNewNode();
         if (target.getL() == null) {
-            node.setParent(target);
-            target.setL(node);
-            target = node;
+            tempNode.setParent(target);
+            target.setL(tempNode);
+            target = tempNode;
+        } else if ((target.getR() == null)) {
+            tempNode.setParent(target);
+            target.setR(tempNode);
+            target = tempNode;
         } else {
-            node.setParent(target);
-            target.setR(node);
-            target = node;
+            System.out.println("R and L not null");
         }
     }
 
-    private void setNewRoot() {
-        MyNode node = new MyNode();
-        target.setParent(node);
-        node.setL(target);
-        root = node;
-        target = target.getParent();
+    private void getNewRoot() {
+        tempNode = getNewNode();
+        target.setParent(tempNode);
+        tempNode.setL(target);
+        root = tempNode;
+        goToParent();
+    }
 
+    private void upGreat(String data) {
+        MyNode nodeLastR = target.getR();
+        tempNode = getNewNode();
+        tempNode.setParent(nodeLastR);
+        nodeLastR.setL(tempNode);
+        tempNode.setData(nodeLastR.getData());
+        nodeLastR.setData(data);
+        target = nodeLastR;
 
+    }
+
+    private MyNode getNewNode (){
+        return new MyNode();
     }
 
     private void setDataAndGoParent(String data) {
-        target.setData(data);
-        target = target.getParent();
+        setData(data);
+        goToParent();
     }
 
-    private void sedData(String data) {
+    private void setData(String data) {
         target.setData(data);
     }
 
     private void createChildAndGoToParent(String s) {
-        MyNode node = new MyNode();
-        if (target.getL() == null) {
-            node.setParent(target);
-            target.setL(node);
-            target = node;
-            target.setData(s);
-            target = target.getParent();
-        } else {
-            node.setParent(target);
-            target.setR(node);
-            target = node;
-            target.setData(s);
-            target = target.getParent();
-        }
+        getChild();
+        setData(s);
+        goToParent();
     }
 
     private void goToParent() {
@@ -86,10 +111,9 @@ public class MyTree {
         }
     }
 
-    public void addListSrings(List<String> strings) {
+    public void addListStrings(List<String> strings) {
         for (String s : strings) {
             insert(s);
-            System.out.println(s);
         }
     }
 

@@ -193,9 +193,12 @@ public class MathTree {
     }
 
     public void printAllTree() {
-        System.out.println(root.getAnInt());
+       /* System.out.println(root.getAnInt());
         System.out.println(root.getAction());
-        print(root);
+        print(root);*/
+       if(root.getRight()==null){
+           System.out.println(root.getLeft().getAction().getResult());
+       }else
         System.out.println(root.getAction().getResult());
     }
 

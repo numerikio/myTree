@@ -8,9 +8,10 @@ public class App {
 
     public static void main(String[] args) {
 
-         String s = "( ( 14 + 15 ) / 18 * 111 ) * ( 6 / ( 8 / ( 10 + 7 ) ) )";
+       //  String s = "( ( 14 + 15 ) / 18 * 111 ) * ( 6 / ( 8 / ( 10 + 7 ) ) )";
       //  String s = "( 20 - 13 / 5 ) * ( ( 20 + 3 ) * 3 )";  //  <<<===---- problem !!!
         //String s = "1 + 10 / 5 + 20 / 4";
+        String s = "1 +";
 
         long x = System.currentTimeMillis();
 

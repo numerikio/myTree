@@ -5,7 +5,7 @@ import my.com.Node;
 public abstract class Action {
 
     private Node node;
-    private int mathPriority;
+    private int mathPriority = 0;
 
     public Action(Node node) {
         this.node = node;

@@ -18,22 +18,31 @@ public class MathTree {
             target = root;
         }
         if (data.equals("(")) {
-
-
+            if (target.getAction() != null) {
+                getChild();
+            }
             getChild();
-
-
-        } else if (isNum(data) && target.getAction()==null) {
+        } else if (isNum(data) && target.getAction() == null) {
             setDataAndGoParent(data);
-        }else if (isNum(data) && target.getAction()!=null){
+        } else if (isNum(data) && target.getAction() != null) {
             createChildAndGoToParent(data);
-        } else if (data.equals("+") || data.equals("-")) {
-
+        } else if (data.equals("+") || data.equals("-") || data.equals("*") || data.equals("/")) {
             setData(data);
-
         } else if (data.equals(")")) {
             goToParent();
         }
+
+    }
+
+
+    private void upGreat() {
+        Node nodeLastR = target.getRight();
+        tempNode = getNewNode();
+        tempNode.setParent(nodeLastR);
+        tempNode.setAction(nodeLastR.getAction());
+        tempNode.setValue(nodeLastR.getValue());
+        nodeLastR.setLeft(tempNode);
+        target = nodeLastR;
 
     }
 
@@ -60,18 +69,44 @@ public class MathTree {
         goToParent();
     }
 
-    private void upGreat(String data) {
-        Node nodeLastR = target.getRight();
-        tempNode = getNewNode();
-        tempNode.setParent(nodeLastR);
-        nodeLastR.setLeft(tempNode);
-        tempNode.setValue(nodeLastR.getValue());
-        if (isNum(data)) {
-            nodeLastR.setValue(Double.valueOf(data));
+    private void createParentOrChild(int targetActionPriority, String data) {
+        int newActionPriority = 0;
+        switch (data) {
+            case "+":
+            case "-":
+                newActionPriority = MathPriority.ADD_AND_SUB.getMathPriority();
+                break;
+            case "*":
+            case "/":
+                newActionPriority = MathPriority.MUL_AND_DIV.getMathPriority();
+                break;
         }
-        target = nodeLastR;
+
+
+        if (targetActionPriority == MathPriority.ADD_AND_SUB.getMathPriority()) {
+            if (newActionPriority == MathPriority.ADD_AND_SUB.getMathPriority()) {
+                getNewRoot();
+            } else if (newActionPriority == MathPriority.MUL_AND_DIV.getMathPriority()) {
+                upGreat();
+            } else System.out.println("error 88.1");
+
+        } else if (targetActionPriority == MathPriority.MUL_AND_DIV.getMathPriority()) {
+            if (target.getParent() != null) {
+                if (target.getParent().getAction() != null) {
+                    if (target.getParent().getAction().getMathPriority() == MathPriority.ADD_AND_SUB.getMathPriority()) {
+                        goToParent();
+                    }
+                }
+            }
+            getNewRoot();
+        } else {
+            System.out.println("error 88");
+
+        }
+
 
     }
+
 
     private Node getNewNode() {
         Node node = new Node();
@@ -92,6 +127,17 @@ public class MathTree {
             setTargetAction(new ReturnValueAction(target));
             return;
         }
+        if (target.getAction() == null) {
+            switchAction(data);
+        } else {
+            int targetActionPriority = target.getAction().getMathPriority();
+            createParentOrChild(targetActionPriority, data);
+            switchAction(data);
+        }
+
+    }
+
+    private void switchAction(String data) {
         switch (data) {
             case "+":
                 setTargetAction(new AddAction(target));
@@ -147,6 +193,8 @@ public class MathTree {
     }
 
     public void printAllTree() {
+        System.out.println(root.getAnInt());
+        System.out.println(root.getAction());
         print(root);
         System.out.println(root.getAction().getResult());
     }

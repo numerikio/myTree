@@ -6,10 +6,11 @@ import java.util.List;
 
 public class MathTree {
 
-    Node root;
-    Node target;
-    Node tempNode;
-    int anInt = 0;
+    private Node root;
+    private Node target;
+    private Node tempNode;
+    private int bracketCount = -1;
+    private int anInt = 0;
 
 
     public void insert(String data) {
@@ -21,7 +22,11 @@ public class MathTree {
             if (target.getAction() != null) {
                 getChild();
             }
+          /*  }if(target.getRight().getAction()!=null && target.getLeft().getAction()!=null){
+                getNewRoot();
+            }*/
             getChild();
+            bracketCount++;
         } else if (isNum(data) && target.getAction() == null) {
             setDataAndGoParent(data);
         } else if (isNum(data) && target.getAction() != null) {
@@ -30,6 +35,7 @@ public class MathTree {
             setData(data);
         } else if (data.equals(")")) {
             goToParent();
+            bracketCount--;
         }
 
     }
@@ -87,7 +93,11 @@ public class MathTree {
             if (newActionPriority == MathPriority.ADD_AND_SUB.getMathPriority()) {
                 getNewRoot();
             } else if (newActionPriority == MathPriority.MUL_AND_DIV.getMathPriority()) {
-                upGreat();
+              //  if (bracketCount == 0) {
+             //       getNewRoot();
+             //   } else {
+                    upGreat();
+             //   }
             } else System.out.println("error 88.1");
 
         } else if (targetActionPriority == MathPriority.MUL_AND_DIV.getMathPriority()) {
@@ -194,12 +204,12 @@ public class MathTree {
 
     public void printAllTree() {
        /* System.out.println(root.getAnInt());
-        System.out.println(root.getAction());
-        print(root);*/
-       if(root.getRight()==null){
-           System.out.println(root.getLeft().getAction().getResult());
-       }else
-        System.out.println(root.getAction().getResult());
+        System.out.println(root.getAction());*/
+        print(root);
+        if (root.getRight() == null) {
+            System.out.println(root.getLeft().getAction().getResult());
+        } else
+            System.out.println(root.getAction().getResult());
     }
 
     /**

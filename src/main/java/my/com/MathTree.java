@@ -9,8 +9,10 @@ public class MathTree {
     private Node root;
     private Node target;
     private Node tempNode;
-    private int bracketCount = -1;
+    private int bracketCount = 0;
     private int anInt = 0;
+    private boolean firstBracket = false;
+    private boolean subBracket = false;
 
 
     public void insert(String data) {
@@ -26,7 +28,7 @@ public class MathTree {
                 getNewRoot();
             }*/
             getChild();
-            bracketCount++;
+            bracketCount(data);
         } else if (isNum(data) && target.getAction() == null) {
             setDataAndGoParent(data);
         } else if (isNum(data) && target.getAction() != null) {
@@ -35,9 +37,26 @@ public class MathTree {
             setData(data);
         } else if (data.equals(")")) {
             goToParent();
-            bracketCount--;
+            bracketCount(data);
         }
 
+    }
+
+    private void bracketCount(String data) {
+        if (subBracket) {
+            firstBracket = true;
+            switch (data) {
+                case "(":
+                    bracketCount++;
+                    break;
+                case ")":
+                    bracketCount--;
+                    break;
+                default:
+                    System.out.println("WTF !!");
+            }
+        }
+        subBracket = true;
     }
 
 
@@ -93,11 +112,11 @@ public class MathTree {
             if (newActionPriority == MathPriority.ADD_AND_SUB.getMathPriority()) {
                 getNewRoot();
             } else if (newActionPriority == MathPriority.MUL_AND_DIV.getMathPriority()) {
-              //  if (bracketCount == 0) {
-             //       getNewRoot();
-             //   } else {
+                if (bracketCount == 0 && firstBracket) {
+                    getNewRoot();
+                } else {
                     upGreat();
-             //   }
+                }
             } else System.out.println("error 88.1");
 
         } else if (targetActionPriority == MathPriority.MUL_AND_DIV.getMathPriority()) {
@@ -210,6 +229,10 @@ public class MathTree {
             System.out.println(root.getLeft().getAction().getResult());
         } else
             System.out.println(root.getAction().getResult());
+    }
+
+    public double result() {
+        return root.getAction().getResult();
     }
 
     /**
